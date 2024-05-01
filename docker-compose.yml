@@ -4,7 +4,7 @@ services:
   frontend:
     build: 
       context: ./
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.nuxt
     command:  sh -c "pnpm run dev"
     working_dir: '/app'
     user: node
@@ -50,7 +50,7 @@ services:
       - app-network
 
   vscode:
-    container_name: vscode
+    container_name: vscode-${APP_NAME}
     # image: codercom/code-server
     build: 
       context: ./
@@ -58,11 +58,14 @@ services:
     depends_on:
       - frontend
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - "$HOME/.local:/home/coder/.local"
       - "$HOME/.config:/home/coder/.config"
       - "$PWD:/home/coder/project"
     environment:
-      - "DOCKER_USER=${USER}"
+      - TZ=Europe/Paris
+      - DOCKER_USER=${USER}
+      - USER_PASSWORD=1234
     user: ${UID_GID}
     labels:
       # Ajout dans traefik
